@@ -125,9 +125,9 @@ void sdInit()
     }
 
 #ifdef RONAN    
-    ZeroMemory(speech,64*256);
-    for (int i=0; i<64; i++)
-        speechptrs[i]=speech[i];
+    memset(speech, 0, 64*256);
+    for (int i = 0; i < 64; i++)
+        speechptrs[i] = speech[i];
 
     strcpy(speech[0],"!DHAX_ !kwIH_k !br4AH_UHn !fAA_ks !jAH_mps !OW!vER_ !DHAX_ !lEY!zIY_ !dAA_g ");
 #endif
