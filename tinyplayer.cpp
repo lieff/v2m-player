@@ -22,13 +22,15 @@
 static V2MPlayer player;
 static SDL_AudioDeviceID dev;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-static void sdl_callback(void *userdata, Uint8 * stream, int len) {
+static void sdl_callback(void *userdata, Uint8 * stream, int len)
+{
     player.Render((float*) stream, len / 8);
 }
 
-static bool init_sdl() {
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+static bool init_sdl()
+{
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
         SDL_Log("Couldn't initialize SDL: %s\n",SDL_GetError());
         SDL_Quit();
         return false;
@@ -42,7 +44,8 @@ static bool init_sdl() {
     desired.callback = sdl_callback;
 
     dev = SDL_OpenAudioDevice(NULL, 0, &desired, &actual, 0);
-    if (! dev) {
+    if (! dev)
+    {
         SDL_Log("Failed to open audio, %s\n", SDL_GetError());
         return false;
     }
@@ -50,11 +53,13 @@ static bool init_sdl() {
     return true;
 }
 
-static unsigned char* check_and_convert(unsigned char* tune, int length) {
+static unsigned char* check_and_convert(unsigned char* tune, int length)
+{
     sdInit();
 
     int version = CheckV2MVersion(tune, length);
-    if (version < 0) {
+    if (version < 0)
+    {
         SDL_LogCritical(SDL_LOG_CATEGORY_INPUT, "Failed to Check Version on input file");
         return NULL;
     }
@@ -67,29 +72,33 @@ static unsigned char* check_and_convert(unsigned char* tune, int length) {
     return converted;
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, const char** argv)
+{
     printf("Farbrausch Tiny Music Player v0.dontcare TWO\n");
     printf("Code and Synthesizer (C) 2000-2008 kb/Farbrausch\n");
     printf("SDL Port by github.com/jgilje\n\n");
 
-    if (argc <= 1) {
+    if (argc <= 1)
+    {
         printf("usage: %s V2M_file\n", argv[0]);
         return 1;
     }
 
     FILE* file = fopen(argv[1], "r");
-    if (file == NULL) {
+    if (file == NULL)
+    {
         printf("Failed to open %s\n", argv[1]);
         return 1;
     }
 
     fseek(file, 0, SEEK_END);
-    int64_t size = ftell(file);
+    uint64_t size = ftell(file);
     fseek(file, 0, SEEK_SET);
     unsigned char* theTune = (unsigned char*) calloc(1, size);
 
     size_t read = fread(theTune, 1, size, file);
-    if (size != read) {
+    if (size != read)
+    {
         fprintf(stderr, "Invalid read size\n");
         return 1;
     }
