@@ -65,7 +65,7 @@ static void readfile(const unsigned char *inptr, const int inlen)
     d += 12;
     base.gptr = d;
     d += 10*base.gdnum;
-    for (int ch = 0; ch<16; ch++)
+    for (int ch = 0; ch < 16; ch++)
     {
         _ssbase::_basech &c = base.chan[ch];
         c.notenum = *((uint32_t*)d);
@@ -112,7 +112,7 @@ static void readfile(const unsigned char *inptr, const int inlen)
         d += base.spsize;
 
         // small sanity check
-        if (base.spsize < 0 || base.spsize > 8192)
+        if (base.spsize < 0 || base.spsize > 8192 || (d - inptr) > inlen)
         {
             base.spsize = 0;
             base.speechdata = 0;
@@ -257,7 +257,7 @@ void ConvertV2M(const unsigned char *inptr, const int inlen, unsigned char **out
 {
     int i, p;
     // check version
-    int vdelta = CheckV2MVersion(inptr,inlen);
+    int vdelta = CheckV2MVersion(inptr, inlen);
     if (!vdelta) // if same, simply clone
     {
         *outptr = new uint8_t[inlen + 4];
@@ -283,8 +283,8 @@ void ConvertV2M(const unsigned char *inptr, const int inlen, unsigned char **out
     }
 
     // calc new size
-    int gdiff = v2gsizes[v2version]-v2gsizes[vdelta];
-    int pdiff = v2vsizes[v2version]-v2vsizes[vdelta];
+    int gdiff = v2gsizes[v2version] - v2gsizes[vdelta];
+    int pdiff = v2vsizes[v2version] - v2vsizes[vdelta];
     int newsize = inlen + gdiff + base.maxp*pdiff;
     printf2("old size: %d, new size: %d\n", inlen, newsize);
 
@@ -384,7 +384,6 @@ void ConvertV2M(const unsigned char *inptr, const int inlen, unsigned char **out
     newptr += base.spsize;
 
     printf2("est size: %d, real size: %d\n", newsize, newptr - *outptr);
-
 }
 
 unsigned long GetV2MPatchData(const unsigned char *inptr, const int inlen,
