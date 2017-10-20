@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #ifdef _MSC_VER
-static double sFPow(double a,double b)
+static double sFPow(double a, double b)
 {
     // faster pow based on code by agner fog
     __asm
@@ -25,12 +25,12 @@ static double sFPow(double a,double b)
         fyl2x;
         fist  dword ptr [a];
         sub   esp, 12;
-        mov   dword ptr [esp],0;
-        mov   dword ptr [esp+4],0x80000000;
+        mov   dword ptr [esp], 0;
+        mov   dword ptr [esp + 4], 0x80000000;
         fisub dword ptr [a];
         mov   eax, dword ptr [a];
         add   eax, 0x3fff;
-        mov   [esp+8], eax;
+        mov   [esp + 8], eax;
         jle   underflow;
         cmp   eax, 0x8000;
         jge   overflow;
@@ -452,12 +452,12 @@ extern "C" void ronanCBTick(syWRonan *wsptr)
 
 extern "C" void ronanCBNoteOn(syWRonan *wsptr)
 {
-    wsptr->wait4on=0;
+    wsptr->wait4on = 0;
 }
 
 extern "C" void ronanCBNoteOff(syWRonan *wsptr)
 {
-    wsptr->wait4off=0;
+    wsptr->wait4off = 0;
 }
 
 extern "C" void ronanCBSetCtl(syWRonan *wsptr, uint32_t ctl, uint32_t val)
@@ -473,11 +473,10 @@ extern "C" void ronanCBSetCtl(syWRonan *wsptr, uint32_t ctl, uint32_t val)
             wsptr->reset();
 
             if (wsptr->texts[val])
-                wsptr->ptr = wsptr->baseptr=wsptr->texts[val];
+                wsptr->ptr = wsptr->baseptr = wsptr->texts[val];
             else
-                wsptr->ptr = wsptr->baseptr=nix;
-        }
-        else
+                wsptr->ptr = wsptr->baseptr = nix;
+        } else
             wsptr->framerate = val - 63;
         break;
     case 5:
@@ -521,14 +520,14 @@ extern "C" void ronanCBProcess(syWRonan *wsptr, float *buf, uint32_t len)
 
         // differentiate input signal, add frication noise
         float lin = in;
-        in = (wsptr->noise()*wsptr->a_frication)+in-wsptr->lastin2;
+        in = (wsptr->noise()*wsptr->a_frication) + in - wsptr->lastin2;
         wsptr->lastin2 = lin;
 
         // process diff/fric input signal with f2..f6 and bypass (phase inverted)
         for (int r = 2; r < 7; r++)
-            out=wsptr->res[r].tick(in) - out;
+            out = wsptr->res[r].tick(in) - out;
 
-        out=in*wsptr->a_bypass - out;
+        out = in*wsptr->a_bypass - out;
 
         // high pass filter
         wsptr->hpb1 += 0.012f*(out = out - wsptr->hpb1);

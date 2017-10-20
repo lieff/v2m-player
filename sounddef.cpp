@@ -25,9 +25,7 @@ const char *v2sources[] =
 };
 const int v2nsources = sizeof(v2sources)/sizeof(char *);
 
-
 // lr: in case you miss the arrays: look in sounddef.h
-
 static unsigned char v2clipboard[v2soundsize];
 static char v2clipname[256];
 
@@ -78,9 +76,11 @@ void sdInit()
     // init version control
     v2version = 0;
     for (int i = 0; i < v2nparms; i++)
-        if (v2parms[i].version > v2version) v2version = v2parms[i].version;
+        if (v2parms[i].version > v2version)
+            v2version = v2parms[i].version;
     for (int i = 0; i < v2ngparms; i++)
-        if (v2gparms[i].version > v2version) v2version = v2gparms[i].version;
+        if (v2gparms[i].version > v2version)
+            v2version = v2gparms[i].version;
 
     v2vsizes = new int[v2version + 1];
     v2gsizes = new int[v2version + 1];
@@ -129,7 +129,7 @@ void sdInit()
     for (int i = 0; i < 64; i++)
         speechptrs[i] = speech[i];
 
-    strcpy(speech[0],"!DHAX_ !kwIH_k !br4AH_UHn !fAA_ks !jAH_mps !OW!vER_ !DHAX_ !lEY!zIY_ !dAA_g ");
+    strcpy(speech[0], "!DHAX_ !kwIH_k !br4AH_UHn !fAA_ks !jAH_mps !OW!vER_ !DHAX_ !lEY!zIY_ !dAA_g ");
 #endif
 }
 
@@ -142,37 +142,37 @@ void sdClose()
 }
 
 #if FILE_IO
-static bool sdLoadPatch(file &in, int pn, int fver=-1)
+static bool sdLoadPatch(file &in, int pn, int fver = -1)
 {
-    if (fver==-1)
+    if (fver ==- 1)
     {
-        if (in.read(patchnames[pn],32)<32) return 0;
-        if (in.read(&fver,4)<4) return 0;
+        if (in.read(patchnames[pn], 32) < 32) return 0;
+        if (in.read(&fver, 4) < 4) return 0;
     }
 
-    int rss=v2vsizes[fver]-255*3-1;
-    uint8_t *patch=soundmem+128*4+v2soundsize*pn;
+    int rss = v2vsizes[fver] - 255*3 - 1;
+    uint8_t *patch = soundmem + 128*4 + v2soundsize*pn;
 
     // fill patch with default values
-    memcpy(patch,v2initsnd,v2soundsize);
+    memcpy(patch, v2initsnd, v2soundsize);
 
     // load patch
-    for (int j=0; j<v2nparms; j++)
-        if (v2parms[j].version<=fver)
-            patch[j]=in.getuint8_t();
-  patch+=v2nparms;
-    in.read(patch,1);
+    for (int j = 0; j < v2nparms; j++)
+        if (v2parms[j].version <= fver)
+            patch[j] = in.getuint8_t();
+    patch += v2nparms;
+    in.read(patch, 1);
     
     // remap mods
-    for (int j=0; j<*patch; j++)
+    for (int j = 0; j < *patch; j++)
     {
-        uint8_t *mod=patch+3*j+1;
-        if (in.read(mod,3)<3) return 0;
-        for (int k=0; k<=mod[2]; k++)
-            if (v2parms[k].version>fver) mod[2]++;
+        uint8_t *mod = patch + 3*j + 1;
+        if (in.read(mod, 3) < 3) return 0;
+        for (int k = 0; k <= mod[2]; k++)
+            if (v2parms[k].version > fver) mod[2]++;
     }
 
-    in.seekcur(3*(255-*patch));
+    in.seekcur(3*(255 - *patch));
 //    if (in.read(patch+v2nparms,3*(255-*patch))<3*(255-*patch)) return 0;
     return 1;
 }
@@ -221,19 +221,19 @@ static bool sdLoadBank(file &in)
         }
     }
 #ifdef RONAN
-    ZeroMemory(speech,64*256);
+    memset(speech, 0, 64*256);
 #endif
 
     if (!in.eof())
     {
-        sml=in.getuint32_t();
+        sml = in.getuint32_t();
 #ifdef RONAN
-        if (sml<=64*256)
-            in.read(speech,sml);
+        if (sml <= 64*256)
+            in.read(speech, sml);
         else
         {
-            in.read(speech,64*256);
-            in.seekcur(sml-64*256);
+            in.read(speech, 64*256);
+            in.seekcur(sml - 64*256);
         }
 #else
 #ifndef SINGLECHN
@@ -249,10 +249,10 @@ static bool sdLoadBank(file &in)
 bool sdLoad(file &in)
 {
     char id[5];
-    id[4]=0;
-    if (in.read(id,4)<4) return 0;
-    if (!strcmp(id,"v2p0")) return sdLoadBank(in);
-    if (!strcmp(id,"v2p1")) return sdLoadPatch(in,v2curpatch,-1);
+    id[4] = 0;
+    if (in.read(id, 4) < 4) return 0;
+    if (!strcmp(id, "v2p0")) return sdLoadBank(in);
+    if (!strcmp(id, "v2p1")) return sdLoadPatch(in, v2curpatch, -1);
     return 0;
 }
 
@@ -261,20 +261,20 @@ bool sdSaveBank(file &out)
     if (!out.puts("v2p0")) return 0;
 
     // 1: patchnamen
-    if (out.write(patchnames,128*32)<128*32) return 0;
+    if (out.write(patchnames, 128*32) < 128*32) return 0;
 
     // 2: patchdaten
-    if (!out.putuint32_t(smsize-128*4)) return 0;
-    if (out.write(soundmem+128*4,smsize-128*4)<smsize-128*4) return 0;
+    if (!out.putuint32_t(smsize - 128*4)) return 0;
+    if (out.write(soundmem + 128*4, smsize - 128*4) < smsize - 128*4) return 0;
 
     // 3: globals
     if (!out.putuint32_t(v2ngparms)) return 0;
-    if (out.write(globals,v2ngparms)<v2ngparms) return 0;
+    if (out.write(globals, v2ngparms) < v2ngparms) return 0;
 
 #ifdef RONAN
     // 4: speech synth
     if (!out.putsU32(64*256)) return 0;
-    if (out.write(speech,64*256)<64*256) return 0;
+    if (out.write(speech, 64*256) < 64*256) return 0;
 #else
     if (!out.putuint32_t(0)) return 0;
 #endif
@@ -286,11 +286,11 @@ bool sdSavePatch(file &out)
 {
     if (!out.puts("v2p1")) return 0;
 
-    if (out.write(patchnames[v2curpatch],32)<32) return 0;
+    if (out.write(patchnames[v2curpatch], 32) < 32) return 0;
 
     // 2: patchdaten
     if (!out.putuint32_t(v2version)) return 0;
-    if (out.write(soundmem+128*4+v2soundsize*v2curpatch,v2soundsize)<v2soundsize) return 0;
+    if (out.write(soundmem + 128*4 + v2soundsize*v2curpatch, v2soundsize) < v2soundsize) return 0;
 
     return 1;
 }
@@ -301,43 +301,43 @@ bool sdImportV2MPatches(file &in, const char *prefix)
 {
     fileM mem;
     mem.open(in);
-    int len=mem.size();
-    uint8_t *ptr=(uint8_t*)mem.detach();
+    int len = mem.size();
+    uint8_t *ptr = (uint8_t*)mem.detach();
 
     const uint8_t *v2mpatches[128];
     uint8_t *newmem;
-    uint32_t np=GetV2MPatchData(ptr,len,&newmem,v2mpatches);
+    uint32_t np = GetV2MPatchData(ptr, len, &newmem, v2mpatches);
 
-    for (uint32_t i=0; i<np; i++)
+    for (uint32_t i = 0; i < np; i++)
     {
-        int p=(v2curpatch+i)%128;
-        memcpy(soundmem+128*4+v2soundsize*p,v2mpatches[i],v2soundsize);
+        int p = (v2curpatch + i) % 128;
+        memcpy(soundmem + 128*4 + v2soundsize*p, v2mpatches[i], v2soundsize);
 
         char buf[256];
-        sprintf(buf,"%s %03d",prefix,i);
-        buf[31]=0;
-        strcpy(patchnames[p],buf);
+        sprintf(buf, "%s %03d", prefix, i);
+        buf[31] = 0;
+        strcpy(patchnames[p], buf);
     }
     
-    return np?1:0;
+    return np ? 1 : 0;
 }
 */
 
 
 void sdCopyPatch()
 {
-    memcpy(v2clipboard,soundmem+128*4+v2curpatch*v2soundsize,v2soundsize);
-    strcpy(v2clipname,patchnames[v2curpatch]);
+    memcpy(v2clipboard, soundmem + 128*4 + v2curpatch*v2soundsize, v2soundsize);
+    strcpy(v2clipname, patchnames[v2curpatch]);
 }
 
 void sdPastePatch()
 {
-    memcpy(soundmem+128*4+v2curpatch*v2soundsize,v2clipboard,v2soundsize);
-    strcpy(patchnames[v2curpatch],v2clipname);
+    memcpy(soundmem + 128*4 + v2curpatch*v2soundsize, v2clipboard, v2soundsize);
+    strcpy(patchnames[v2curpatch], v2clipname);
 }
 
 void sdInitPatch()
 {
-    memcpy(soundmem+128*4+v2curpatch*v2soundsize,v2initsnd,v2soundsize);
-    sprintf(patchnames[v2curpatch],"Init Patch #%03d",v2curpatch);
+    memcpy(soundmem + 128*4 + v2curpatch*v2soundsize, v2initsnd, v2soundsize);
+    sprintf(patchnames[v2curpatch], "Init Patch #%03d", v2curpatch);
 }

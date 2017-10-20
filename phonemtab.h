@@ -29,7 +29,7 @@ struct Phoneme
 #define NPHONEMES 69
 #define PTABSIZE  1311
 
-static const uint8_t multipliers[PTABSIZE/NPHONEMES] = { 10,10,20,10,20,10,10,1,1,1,1,1,1,1,1,1,1,1,1};
+static const uint8_t multipliers[PTABSIZE/NPHONEMES] = { 10,10,20,10,20,10,10,1,1,1,1,1,1,1,1,1,1,1,1 };
 
 
 // CHANGES:  a_f56 + 15 (-> duration -15)
